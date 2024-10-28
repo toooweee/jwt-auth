@@ -7,7 +7,7 @@ const mailService = require('./mail-service')
 class UserService {
     async register(email, password) {
         const candidate = await prisma.user.findUnique({
-            where: { email }
+            where: { email: email }
         })
 
         if (candidate) {
