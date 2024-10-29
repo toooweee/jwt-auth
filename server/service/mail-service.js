@@ -1,6 +1,41 @@
-class MailService {
-    async sendActivationMail(to, link){
+const nodemailer = require('nodemailer')
 
+class MailService {
+
+    constructor() {
+        this.transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASSWORD,
+            }
+        })
+
+        this.transporter.verify(function(error, success) {
+            if (error) {
+                console.log("SMTP Connection error:", error);
+            } else {
+                console.log("SMTP Server is ready to take our messages");
+            }
+        });
+    }
+
+    async sendActivationMail(to, link){
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to,
+            subject: "Активация аккаунта на " + process.env.API_URL,
+            text: "",
+            html:
+                `
+                <div>
+                 <h1>Для активации аккаунта перейдите по ссылке</h1>
+                 <a href="${link}">${link}</a>
+                </div>
+                `
+        })
     }
 }
 
